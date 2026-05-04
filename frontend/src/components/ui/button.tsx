@@ -1,3 +1,4 @@
+/** Button primitive + CVA variants (design-system layer; use `<Button>` from `@/components/ui/button`). */
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 

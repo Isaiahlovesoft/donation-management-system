@@ -1,3 +1,9 @@
+/**
+ * Vite config for the donation dashboard SPA.
+ *
+ * - `@` → `./src` import alias
+ * - Dev server proxies `/donations` to the Express API on port 3001 so fetch() stays same-origin
+ */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";

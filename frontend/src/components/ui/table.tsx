@@ -1,3 +1,4 @@
+/** Styled HTML table building blocks (scroll container + row/hover states). */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"

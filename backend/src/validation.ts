@@ -1,12 +1,20 @@
+/**
+ * Request body parsing for donation routes.
+ *
+ * Returns a discriminated result (`ok: true` + typed value, or `ok: false` + message)
+ * so route handlers can map failures to HTTP 400 without throwing.
+ */
 import type { CreateDonationBody, DonationStatus, PaymentMethod } from "./types.js";
 
 const PAYMENT_METHODS: PaymentMethod[] = ["cc", "ach", "crypto", "venmo"];
 const STATUSES: DonationStatus[] = ["new", "pending", "success", "failure"];
 
+/** Loose UUID v4/v1 string shape check — good enough for API input validation. */
 function isUuidShape(s: unknown): s is string {
   return typeof s === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
+/** Validates and narrows `unknown` JSON to `CreateDonationBody`. */
 export function parseCreateBody(
   body: unknown,
 ): { ok: true; value: CreateDonationBody } | { ok: false; message: string } {
@@ -51,6 +59,7 @@ export function parseCreateBody(
   };
 }
 
+/** Validates PATCH body `{ status }` for status transitions. */
 export function parsePatchStatus(body: unknown): { ok: true; status: DonationStatus } | { ok: false; message: string } {
   if (body === null || typeof body !== "object") {
     return { ok: false, message: "Request body must be a JSON object." };

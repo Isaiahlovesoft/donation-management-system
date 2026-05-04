@@ -1,5 +1,6 @@
 "use client";
 
+/** Accessible select/dropdown built on @base-ui/react/select (trigger, portal, items). */
 import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 

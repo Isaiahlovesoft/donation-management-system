@@ -1,6 +1,10 @@
 import type { CreateDonationBody, Donation } from "./types.js";
 
-/** Fields that must match for POST /donations to be considered the same idempotent request. */
+/**
+ * Stable JSON fingerprint of a create payload.
+ * Used so a duplicate POST with the same `uuid` can return 200 if the body matches,
+ * or 409 if the same `uuid` was used with different data (idempotency conflict).
+ */
 export function createBodyFingerprint(body: CreateDonationBody): string {
   return JSON.stringify({
     uuid: body.uuid,
@@ -14,6 +18,7 @@ export function createBodyFingerprint(body: CreateDonationBody): string {
   });
 }
 
+/** Same canonical field order as `createBodyFingerprint` so stored vs incoming bodies compare cleanly. */
 export function donationFingerprint(d: Donation): string {
   return JSON.stringify({
     uuid: d.uuid,

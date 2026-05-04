@@ -1,6 +1,9 @@
 import type { DonationStatus } from "./types";
 
-/** Next statuses the operator may set (excludes no-op). */
+/**
+ * Which status buttons to show in the UI — mirrors server `transitions.ts` / `isValidTransition`.
+ * Terminal states return [] so the operator sees "—" instead of invalid actions.
+ */
 export function allowedNextStatuses(current: DonationStatus): DonationStatus[] {
   switch (current) {
     case "new":

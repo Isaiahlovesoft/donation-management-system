@@ -1,3 +1,7 @@
+/**
+ * Donation processor dashboard — lists seed/API donations, filters, summary stats,
+ * and per-row actions that PATCH allowed next statuses.
+ */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -21,6 +25,7 @@ function statusLabel(s: DonationStatus): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+/** Colored badge variants keyed by lifecycle state (success green, pending amber, etc.). */
 function StatusBadge({ status }: { status: DonationStatus }) {
   return (
     <Badge
@@ -42,6 +47,7 @@ function StatusBadge({ status }: { status: DonationStatus }) {
 export default function App() {
   const [rows, setRows] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
+  /** When set, that row's action buttons disable to prevent double-submit. */
   const [busyId, setBusyId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<DonationStatus | "all">("all");
   const [filterMethod, setFilterMethod] = useState<PaymentMethod | "all">("all");
@@ -62,6 +68,7 @@ export default function App() {
     void load();
   }, [load]);
 
+  /** Table rows after client-side status/method filters (does not re-fetch). */
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterStatus !== "all" && r.status !== filterStatus) return false;
@@ -70,6 +77,7 @@ export default function App() {
     });
   }, [rows, filterStatus, filterMethod]);
 
+  /** Aggregate counts and volume for the summary card above the table. */
   const summary = useMemo(() => {
     const byMethod: Record<PaymentMethod, { count: number; cents: number }> = {
       cc: { count: 0, cents: 0 },

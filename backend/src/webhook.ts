@@ -1,5 +1,9 @@
-//optional webhook simulation when a donation settles
-
+/**
+ * Simulated outbound webhook when a donation reaches a terminal settlement status.
+ *
+ * In production you would POST `payload` to a subscriber URL with signing/retries.
+ * Here we only log JSON so operators can see the event in the server console.
+ */
 import type { Donation } from "./types.js";
 
 export type SettlementEvent = "donation.success" | "donation.failure";
@@ -14,6 +18,5 @@ export function emitSettlementWebhook(donation: Donation, kind: SettlementEvent)
     donorId: donation.donorId,
     at: donation.updatedAt,
   };
-  // In production this would POST to a subscriber URL; here we log for operators.
   console.log("[webhook]", JSON.stringify(payload));
 }

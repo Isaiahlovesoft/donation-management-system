@@ -1,6 +1,11 @@
 import type { DonationStatus } from "./types.js";
 
-/** Valid single-step transitions (excluding no-op same status). */
+/**
+ * Allowed status transitions (excluding no-op “same status”).
+ *
+ * Pipeline: new → pending → success | failure
+ * Terminal states success/failure cannot change again.
+ */
 const ALLOWED: Record<DonationStatus, DonationStatus[]> = {
   new: ["pending"],
   pending: ["success", "failure"],
@@ -8,11 +13,13 @@ const ALLOWED: Record<DonationStatus, DonationStatus[]> = {
   failure: [],
 };
 
+/** `from === to` is always allowed (no-op); otherwise `to` must be listed under `from`. */
 export function isValidTransition(from: DonationStatus, to: DonationStatus): boolean {
   if (from === to) return true;
   return ALLOWED[from].includes(to);
 }
 
+/** Human-readable reason for 422 when a transition is rejected. */
 export function transitionErrorMessage(from: DonationStatus, to: DonationStatus): string {
   if (from === to) return "";
   const next = ALLOWED[from];

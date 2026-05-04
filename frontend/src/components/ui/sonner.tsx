@@ -1,3 +1,7 @@
+/**
+ * Global toast provider — wraps Sonner with Lucide icons and theme tokens.
+ * Uses `theme="system"` (no next-themes); appearance follows OS light/dark preference.
+ */
 import * as React from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import {
@@ -8,7 +12,6 @@ import {
   Loader2Icon,
 } from "lucide-react";
 
-/** Sonner toasts — no next-themes; Vite app uses OS preference via theme="system". */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner

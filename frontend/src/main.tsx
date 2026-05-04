@@ -1,3 +1,6 @@
+/**
+ * React bootstrap: mount the app and global toast host (Sonner).
+ */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";

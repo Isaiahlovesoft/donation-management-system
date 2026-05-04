@@ -1,6 +1,11 @@
+/**
+ * Static seed donations for local development and demos.
+ *
+ * `SEED_DONATIONS` omits `updatedAt`; `donationsWithTimestamps()` sets `updatedAt`
+ * equal to `createdAt` so each row satisfies the `Donation` type before hitting the store.
+ */
 import type { Donation } from "./types.js";
 
-//sample seed donations (spec JSON)
 export const SEED_DONATIONS: Omit<Donation, "updatedAt">[] = [
   {
     uuid: "a1b2c3d4-0001-0001-0001-000000000001",

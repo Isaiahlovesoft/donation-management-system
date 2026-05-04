@@ -1,5 +1,12 @@
-// POST /donations, GET /donations, GET /donations/:uuid, PATCH /donations/:uuid/status
-
+/**
+ * Donation HTTP API — create, list, fetch by id, and patch status.
+ *
+ * Routes (all prefixed by app mounting, e.g. `/donations`):
+ * - POST   /           Create donation (uuid idempotency via body fingerprint)
+ * - GET    /           List all
+ * - GET    /:uuid     Single donation
+ * - PATCH  /:uuid/status  Update status (state machine + optional Idempotency-Key replay)
+ */
 import { Router } from "express";
 import type { Donation } from "../types.js";
 import { createBodyFingerprint, donationFingerprint } from "../idempotency.js";
@@ -10,7 +17,11 @@ import { emitSettlementWebhook } from "../webhook.js";
 
 export const donationsRouter = Router();
 
-/** Idempotency-Key -> serialized PATCH body -> last JSON response for PATCH /donations/:uuid/status */
+/**
+ * PATCH idempotency cache: for each (donation uuid + Idempotency-Key), remember
+ * the serialized body → last JSON response. Replaying the exact same PATCH returns
+ * the cached response; reusing the key with a different body returns 409.
+ */
 const patchIdempotentReplay = new Map<string, Map<string, { donation: Donation }>>();
 
 function patchCacheKey(uuid: string, idem: string): string {
@@ -26,6 +37,7 @@ donationsRouter.post("/", (req, res) => {
   const body = parsed.value;
   const existing = getByUuid(body.uuid);
   if (existing) {
+    // Same uuid + same payload → safe retry (200). Different payload → conflict (409).
     if (donationFingerprint(existing) === createBodyFingerprint(body)) {
       res.status(200).json({ donation: existing });
       return;
@@ -77,6 +89,7 @@ donationsRouter.patch("/:uuid/status", (req, res) => {
         res.json(hit);
         return;
       }
+      // Key was used for this uuid before, but with a different body — do not apply twice.
       if (outer.size > 0) {
         res.status(409).json({
           error: "Idempotency conflict: this Idempotency-Key was already used with a different request body.",
@@ -99,6 +112,7 @@ donationsRouter.patch("/:uuid/status", (req, res) => {
 
   let donation: Donation;
   if (current.status === nextStatus) {
+    // Idempotent PATCH to current status — no store write, no webhook.
     donation = current;
   } else {
     const updatedAt = new Date().toISOString();

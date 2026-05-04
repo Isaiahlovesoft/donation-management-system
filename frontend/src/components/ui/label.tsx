@@ -1,3 +1,4 @@
+/** Form label with disabled-state styling when paired with disabled controls. */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
